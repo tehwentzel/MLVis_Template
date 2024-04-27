@@ -1,0 +1,45 @@
+networks:
+  app:
+    driver: bridge
+
+services:
+  ##uncomment belowfor production build
+  # templateproxy:
+  #   container_name: templateproxy
+  #   image: nginx
+  #   restart: always
+  #   ports:
+  #     - 443:443
+  #     - 80:80
+  #   volumes:
+  #     - ./data/_.evl.uic.edu.key:/etc/ssl/evl.key
+  #     - ./data/_.evl.uic.edu.crt:/etc/ssl/evl.crt
+  #     - ./docker/proxy/https-forwarding.conf:/etc/nginx/conf.d/https-forwarding.conf
+  #   networks: 
+  #     - app
+  templatefrontend:
+    container_name: templatefrontend
+    restart: unless-stopped
+    image: node:20
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/workspace/MLVis_Template
+      - ./docker/frontend/init.sh:/usr/local/bin/init.sh
+    entrypoint: sh -c "sh /usr/local/bin/init.sh"
+    networks:
+      - app
+  templatebackend:
+    container_name: templatebackend
+    restart: unless-stopped
+    build:
+      context: ./docker/backend
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    volumes:
+      - ./:/workspace/MLVis_Template
+      - ./docker/backend/init.sh:/usr/local/bin/init.sh
+    entrypoint: sh -c "sh /usr/local/bin/init.sh"
+    networks: 
+      - app
