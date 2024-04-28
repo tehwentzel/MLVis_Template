@@ -25,8 +25,11 @@ services:
       - 8000:8000
     volumes:
       - ./:/workspace/MLVis_Template
+      - ./docker/frontend/init-development.sh:/usr/local/bin/init-development.sh
       - ./docker/frontend/init.sh:/usr/local/bin/init.sh
-    entrypoint: sh -c "sh /usr/local/bin/init.sh"
+    #switch when using the production server
+    entrypoint: sh -c "sh /usr/local/bin/init-development.sh"
+    # entrypoint: sh -c "sh /usr/local/bin/init.sh"
     networks:
       - app
   templatebackend:
